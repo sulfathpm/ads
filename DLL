@@ -1,0 +1,267 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *prev, *next;
+};
+typedef struct Node dlist;
+
+dlist *start = NULL;
+
+// Create a doubly linked list with n nodes
+void create() {
+    int i, n, val;
+    dlist *ptr, *t;
+    printf("\nEnter number of nodes (N): ");
+    scanf("%d", &n);
+
+    for (i = 0; i < n; i++) {
+        ptr = (dlist *)malloc(sizeof(dlist));
+        printf("Enter data for node %d: ", i + 1);
+        scanf("%d", &val);
+        ptr->data = val;
+        ptr->prev = ptr->next = NULL;
+
+        if (start == NULL) {
+            start = ptr; // first node
+            t = ptr;
+        } else {
+            t->next = ptr;
+            ptr->prev = t;
+            t = ptr;
+        }
+    }
+    printf("Doubly Linked List created with %d nodes.\n", n);
+}
+
+// Insert at beginning
+void insert_begin(int val) {
+    dlist *ptr = (dlist *)malloc(sizeof(dlist));
+    ptr->data = val;
+    ptr->prev = NULL;
+    ptr->next = start;
+    if (start != NULL)
+        start->prev = ptr;
+    start = ptr;
+    printf("Inserted %d at beginning.\n", val);
+}
+
+// Insert at end
+void insert_end(int val) {
+    dlist *ptr = (dlist *)malloc(sizeof(dlist));
+    ptr->data = val;
+    ptr->next = NULL;
+
+    if (start == NULL) {
+        ptr->prev = NULL;
+        start = ptr;
+    } else {
+        dlist *t = start;
+        while (t->next != NULL)
+            t = t->next;
+        t->next = ptr;
+        ptr->prev = t;
+    }
+    printf("Inserted %d at end.\n", val);
+}
+
+// Insert at specific position
+void insert_position(int val, int pos) {
+    dlist *ptr = (dlist *)malloc(sizeof(dlist));
+    ptr->data = val;
+    ptr->prev = ptr->next = NULL;
+
+    if (pos == 1) {
+        ptr->next = start;
+        if (start != NULL)
+            start->prev = ptr;
+        start = ptr;
+        printf("Inserted %d at position %d.\n", val, pos);
+        return;
+    }
+
+    dlist *t = start;
+    int i;
+    for (i = 1; i < pos - 1 && t != NULL; i++) {
+        t = t->next;
+    }
+
+    if (t == NULL) {
+        printf("Invalid position %d! Cannot insert.\n", pos);
+        free(ptr);
+        return;
+    }
+
+    ptr->next = t->next;
+    if (t->next != NULL)
+        t->next->prev = ptr;
+    t->next = ptr;
+    ptr->prev = t;
+    printf("Inserted %d at position %d.\n", val, pos);
+}
+
+// Delete from beginning
+void delete_begin() {
+    if (start == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    dlist *t = start;
+    start = start->next;
+    if (start != NULL)
+        start->prev = NULL;
+    printf("Deleted %d from beginning.\n", t->data);
+    free(t);
+}
+
+// Delete from end
+void delete_end() {
+    if (start == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    dlist *t = start;
+
+    if (t->next == NULL) { // only one node
+        printf("Deleted %d from end.\n", t->data);
+        free(t);
+        start = NULL;
+        return;
+    }
+
+    while (t->next != NULL)
+        t = t->next;
+
+    printf("Deleted %d from end.\n", t->data);
+    t->prev->next = NULL;
+    free(t);
+}
+
+// Delete from specific position
+void delete_position(int pos) {
+    if (start == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+
+    dlist *t = start;
+    int i;
+
+    if (pos == 1) {
+        start = start->next;
+        if (start != NULL)
+            start->prev = NULL;
+        printf("Deleted %d from position %d.\n", t->data, pos);
+        free(t);
+        return;
+    }
+
+    for (i = 1; i < pos && t != NULL; i++) {
+        t = t->next;
+    }
+
+    if (t == NULL) {
+        printf("Invalid position %d.\n", pos);
+        return;
+    }
+
+    if (t->next != NULL)
+        t->next->prev = t->prev;
+    if (t->prev != NULL)
+        t->prev->next = t->next;
+
+    printf("Deleted %d from position %d.\n", t->data, pos);
+    free(t);
+}
+
+// Display the doubly linked list
+void display() {
+    dlist *t = start;
+    if (t == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    printf("Doubly Linked List: ");
+    while (t != NULL) {
+        printf("%d <-> ", t->data);
+        t = t->next;
+    }
+    printf("NULL\n");
+}
+
+// Count number of nodes
+void count_nodes() {
+    int count = 0;
+    dlist *t = start;
+    while (t != NULL) {
+        count++;
+        t = t->next;
+    }
+    printf("Total nodes: %d\n", count);
+}
+
+// Main menu
+int main() {
+    int choice, val, pos;
+    while (1) {
+        printf("\n--- Doubly Linked List Menu ---\n");
+        printf("1. Create List\n");
+        printf("2. Insert at Beginning\n");
+        printf("3. Insert at End\n");
+        printf("4. Insert at Specific Position\n");
+        printf("5. Delete from Beginning\n");
+        printf("6. Delete from End\n");
+        printf("7. Delete from Specific Position\n");
+        printf("8. Display List\n");
+        printf("9. Count Nodes\n");
+        printf("10. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            create();
+            break;
+        case 2:
+            printf("Enter value: ");
+            scanf("%d", &val);
+            insert_begin(val);
+            break;
+        case 3:
+            printf("Enter value: ");
+            scanf("%d", &val);
+            insert_end(val);
+            break;
+        case 4:
+            printf("Enter value: ");
+            scanf("%d", &val);
+            printf("Enter position: ");
+            scanf("%d", &pos);
+            insert_position(val, pos);
+            break;
+        case 5:
+            delete_begin();
+            break;
+        case 6:
+            delete_end();
+            break;
+        case 7:
+            printf("Enter position to delete: ");
+            scanf("%d", &pos);
+            delete_position(pos);
+            break;
+        case 8:
+            display();
+            break;
+        case 9:
+            count_nodes();
+            break;
+        case 10:
+            exit(0);
+        default:
+            printf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
