@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Node structure
+struct Node {
+    int data;
+    struct Node *next;
+};
+typedef struct Node stack;
+
+stack *top = NULL; // top of stack
+
+// Create stack with n elements
+void create() {
+    int n, i, val;
+    printf("Enter number of elements to create stack: ");
+    scanf("%d", &n);
+
+    for (i = 0; i < n; i++) {
+        printf("Enter value %d: ", i + 1);
+        scanf("%d", &val);
+
+        stack *ptr = (stack *)malloc(sizeof(stack));
+        ptr->data = val;
+        ptr->next = top;
+        top = ptr;
+    }
+    printf("Stack created with %d elements.\n", n);
+}
+
+// Push (Insert)
+void push() {
+    int val;
+    printf("Enter value to push: ");
+    scanf("%d", &val);
+
+    stack *ptr = (stack *)malloc(sizeof(stack));
+    ptr->data = val;
+    ptr->next = top;
+    top = ptr;
+
+    printf("Pushed %d onto stack.\n", val);
+}
+
+// Pop (Delete)
+void pop() {
+    if (top == NULL) {
+        printf("Stack Underflow! (empty)\n");
+        return;
+    }
+    stack *t = top;
+    printf("Popped %d from stack.\n", t->data);
+    top = top->next;
+    free(t);
+}
+
+// Count nodes
+void countNodes() {
+    int count = 0;
+    stack *t = top;
+    while (t != NULL) {
+        count++;
+        t = t->next;
+    }
+    printf("Total elements in stack: %d\n", count);
+}
+
+// Display stack
+void display() {
+    if (top == NULL) {
+        printf("Stack is empty.\n");
+        return;
+    }
+    stack *t = top;
+    printf("Stack (Top to Bottom): ");
+    while (t != NULL) {
+        printf("%d -> ", t->data);
+        t = t->next;
+    }
+    printf("NULL\n");
+}
+
+// Main Menu
+int main() {
+    int choice;
+    while (1) {
+        printf("\n--- Single Linked Stack Menu ---\n");
+        printf("1. Create Stack\n");
+        printf("2. Push (Insert)\n");
+        printf("3. Pop (Delete)\n");
+        printf("4. Count Nodes\n");
+        printf("5. Display Stack\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            create();
+            break;
+        case 2:
+            push();
+            break;
+        case 3:
+            pop();
+            break;
+        case 4:
+            countNodes();
+            break;
+        case 5:
+            display();
+            break;
+        case 6:
+            exit(0);
+        default:
+            printf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
